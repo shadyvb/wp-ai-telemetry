@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/phpunit/bootstrap-telemetry-disabled.php"
+	backupGlobals="false"
+	colors="true"
+	>
+	<php>
+		<env name="WORDPRESS_TABLE_PREFIX" value="wptests_" />
+		<const name="WP_HTTP_BLOCK_EXTERNAL" value="false" />
+	</php>
+	<testsuites>
+		<testsuite name="telemetry-disabled">
+			<file>tests/phpunit/tests/Functional/TelemetryDisabledFunctionalTest.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>

@@ -1,0 +1,13 @@
+{
+	"core": "https://downloads.wordpress.org/release/wordpress-6.9.1.zip",
+	"phpVersion": "8.2",
+	"plugins": [
+		".",
+		"WordPress/ai-provider-for-openai"
+	],
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_DEBUG_DISPLAY": false
+	}
+}

@@ -1,0 +1,12 @@
+parameters:
+  level: max
+  paths:
+    - includes
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+  scanFiles:
+    - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+  treatPhpDocTypesAsCertain: false
+includes:
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon

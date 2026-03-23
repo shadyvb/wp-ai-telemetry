@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	>
+	<php>
+		<env name="WP_MULTISITE" value="1" />
+		<env name="WORDPRESS_TABLE_PREFIX" value="wptests_" />
+		<const name="WP_HTTP_BLOCK_EXTERNAL" value="false" />
+	</php>
+	<testsuites>
+		<testsuite name="multisite">
+			<file>tests/Multisite/MultisiteSmokeTest.php</file>
+		</testsuite>
+	</testsuites>
+	<groups>
+		<include>
+			<group>ms-required</group>
+		</include>
+	</groups>
+</phpunit>

@@ -1,0 +1,95 @@
+[
+    {
+        "type": "GENERATION",
+        "name": "chat openai/__MODEL__",
+        "input": [
+            {
+                "role": "user",
+                "content": "Use the add_numbers tool with a=3 and b=5 only. Reply with the single integer result, digits only."
+            }
+        ],
+        "output": "__STRIPPED__",
+        "metadata": {
+            "attributes": {
+                "gen_ai.provider.name": "openai",
+                "gen_ai.operation.name": "chat",
+                "gen_ai.request.model": "__MODEL__",
+                "gen_ai.request.temperature": "0.2",
+                "gen_ai.system_instructions": "You are a test harness assistant. When a tool is required to answer, call it exactly once with the parameters implied by the user. Then answer using the tool result. Be brief.",
+                "gen_ai.conversation.id": "__CONVERSATION_ID__",
+                "gen_ai.response.model": "__MODEL__",
+                "gen_ai.response.finish_reasons": "[\"stop\"]"
+            },
+            "resourceAttributes": {
+                "service.name": "wordpress",
+                "service.version": "__WP_VERSION__",
+                "wp.site_url": "__WP_SITE_URL__"
+            },
+            "scope": {
+                "name": "wp-ai-telemetry",
+                "version": "0.1.0",
+                "attributes": []
+            }
+        }
+    },
+    {
+        "type": "GENERATION",
+        "name": "chat openai/__MODEL__",
+        "input": [
+            {
+                "role": "user",
+                "content": "Use the add_numbers tool with a=3 and b=5 only. Reply with the single integer result, digits only."
+            }
+        ],
+        "output": "__STRIPPED__",
+        "metadata": {
+            "attributes": {
+                "gen_ai.provider.name": "openai",
+                "gen_ai.operation.name": "chat",
+                "gen_ai.request.model": "__MODEL__",
+                "gen_ai.request.temperature": "0.2",
+                "gen_ai.system_instructions": "You are a test harness assistant. When a tool is required to answer, call it exactly once with the parameters implied by the user. Then answer using the tool result. Be brief.",
+                "gen_ai.conversation.id": "__CONVERSATION_ID__",
+                "gen_ai.response.model": "__MODEL__",
+                "gen_ai.response.finish_reasons": "[\"tool_calls\"]"
+            },
+            "resourceAttributes": {
+                "service.name": "wordpress",
+                "service.version": "__WP_VERSION__",
+                "wp.site_url": "__WP_SITE_URL__"
+            },
+            "scope": {
+                "name": "wp-ai-telemetry",
+                "version": "0.1.0",
+                "attributes": []
+            }
+        }
+    },
+    {
+        "type": "TOOL",
+        "name": "wpab__wp-ai-telemetry-tests__add-numbers",
+        "input": {
+            "a": 3,
+            "b": 5
+        },
+        "output": "__TOOL_OUTPUT__",
+        "metadata": {
+            "attributes": {
+                "gen_ai.operation.name": "execute_tool",
+                "gen_ai.tool.name": "wpab__wp-ai-telemetry-tests__add-numbers",
+                "gen_ai.tool.call.id": "__TOOL_CALL_ID__",
+                "gen_ai.conversation.id": "__CONVERSATION_ID__"
+            },
+            "resourceAttributes": {
+                "service.name": "wordpress",
+                "service.version": "__WP_VERSION__",
+                "wp.site_url": "__WP_SITE_URL__"
+            },
+            "scope": {
+                "name": "wp-ai-telemetry",
+                "version": "0.1.0",
+                "attributes": []
+            }
+        }
+    }
+]

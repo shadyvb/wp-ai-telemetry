@@ -1,0 +1,35 @@
+[
+    {
+        "type": "GENERATION",
+        "name": "chat openai/__MODEL__",
+        "input": [
+            {
+                "role": "user",
+                "content": "Reply with exactly the word: pong"
+            }
+        ],
+        "output": "__STRIPPED__",
+        "metadata": {
+            "attributes": {
+                "gen_ai.provider.name": "openai",
+                "gen_ai.operation.name": "chat",
+                "gen_ai.request.model": "__MODEL__",
+                "gen_ai.request.temperature": "0.2",
+                "gen_ai.system_instructions": "You are a test harness assistant. Follow the user instructions exactly. Be brief.",
+                "gen_ai.conversation.id": "__CONVERSATION_ID__",
+                "gen_ai.response.model": "__MODEL__",
+                "gen_ai.response.finish_reasons": "[\"stop\"]"
+            },
+            "resourceAttributes": {
+                "service.name": "wordpress",
+                "service.version": "__WP_VERSION__",
+                "wp.site_url": "__WP_SITE_URL__"
+            },
+            "scope": {
+                "name": "wp-ai-telemetry",
+                "version": "0.1.0",
+                "attributes": []
+            }
+        }
+    }
+]

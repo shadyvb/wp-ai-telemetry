@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<ruleset name="WP AI Telemetry">
+	<description>PHPCS for WP AI Telemetry (WPCS + PHPCompatibility + VIP minimum)</description>
+
+	<file>includes</file>
+	<file>tests</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/scripts/*</exclude-pattern>
+	<exclude-pattern>*/tests/fixtures/*</exclude-pattern>
+
+	<arg value="sp"/>
+	<arg name="colors"/>
+
+	<config name="testVersion" value="8.1-"/>
+	<config name="minimum_supported_wp_version" value="6.0"/>
+
+	<rule ref="WordPress-Docs">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wp-ai-telemetry"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="wp_ai_telemetry"/>
+				<element value="WP_AI_Telemetry"/>
+				<element value="WP_AI_Telemetry\"/>
+			</property>
+		</properties>
+		<exclude-pattern>tests/phpunit/bootstrap.php</exclude-pattern>
+		<exclude-pattern>tests/phpunit/bootstrap-telemetry-disabled.php</exclude-pattern>
+		<exclude-pattern>tests/bin/*</exclude-pattern>
+	</rule>
+
+	<rule ref="PHPCompatibility">
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.array_is_listFound"/>
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.str_containsFound"/>
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.str_starts_withFound"/>
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.str_ends_withFound"/>
+	</rule>
+
+	<rule ref="WordPressVIPMinimum"/>
+
+	<!-- Prefer PHP short array syntax [] (project style); VIP defaults to long array(). -->
+	<rule ref="Universal.Arrays.DisallowShortArraySyntax">
+		<severity>0</severity>
+	</rule>
+
+	<!-- Yoda is disabled for PHP 8.1+ typed comparisons and OTel/vendor null checks. -->
+	<rule ref="WordPress.PHP.YodaConditions.NotYoda">
+		<severity>0</severity>
+	</rule>
+
+	<!-- PSR-style getters (e.g. getId) match documented public API. -->
+	<rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
+		<exclude-pattern>includes/Session.php</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPressVIPMinimum.Files.IncludingFile.UsingVariable">
+		<exclude-pattern>tests/phpunit/bootstrap.php</exclude-pattern>
+		<exclude-pattern>tests/phpunit/bootstrap-telemetry-disabled.php</exclude-pattern>
+		<exclude-pattern>tests/bin/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/bin/*</exclude-pattern>
+	</rule>
+
+	<!-- Test / tooling output is not rendered in wp-admin. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Performance.RemoteRequestTimeout">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+</ruleset>

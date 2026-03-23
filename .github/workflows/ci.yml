@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - trunk
+      - 'feature/**'
+      - 'release/**'
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/release.yml'
+      - '**.php'
+      - 'phpcs.xml'
+      - 'phpstan.neon.dist'
+      - 'phpunit.xml.dist'
+      - 'phpunit-disabled.xml.dist'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.wp-env.json'
+      - '.nvmrc'
+  pull_request:
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/release.yml'
+      - '**.php'
+      - 'phpcs.xml'
+      - 'phpstan.neon.dist'
+      - 'phpunit.xml.dist'
+      - 'phpunit-disabled.xml.dist'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.wp-env.json'
+      - '.nvmrc'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: PHPCS & PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Validate Composer
+        run: composer validate --strict
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Lint
+        run: composer lint
+
+  test:
+    name: PHPUnit (unit, multisite, optional functional)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Composer install
+        uses: ramsey/composer-install@v3
+
+      - name: npm ci
+        run: npm ci
+
+      # Mounted into wp-env as wp-content/plugins/wp-ai-telemetry/.env (see TestEnv / tests README).
+      - name: Write .env for functional tests
+        if: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          cat > .env <<EOF
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          OTLP_ENDPOINT=${{ secrets.OTLP_ENDPOINT }}
+          OTLP_AUTH_USERNAME=${{ secrets.OTLP_AUTH_USERNAME }}
+          OTLP_AUTH_PASSWORD=${{ secrets.OTLP_AUTH_PASSWORD }}
+          OTEL_BACKEND_PUBLIC_BASE_URL=${{ secrets.OTEL_BACKEND_PUBLIC_BASE_URL }}
+          EOF
+
+      - name: Start wp-env
+        run: npx wp-env start
+
+      - name: PHPUnit (unit, single site)
+        run: npm run test-php -- --testsuite=unit
+
+      - name: PHPUnit (functional - OpenAI and OTLP)
+        if: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: npm run test-php -- --testsuite=functional
+
+      - name: PHPUnit (multisite smoke)
+        run: npm run test-php-multisite
+
+      - name: PHPUnit (telemetry-disabled bootstrap)
+        run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/wp-ai-telemetry ./vendor/bin/phpunit -c phpunit-disabled.xml.dist --verbose

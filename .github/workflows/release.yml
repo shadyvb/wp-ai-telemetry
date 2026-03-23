@@ -1,0 +1,119 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: PHPCS & PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Validate Composer
+        run: composer validate --strict
+
+      - name: Install dependencies (with dev tools)
+        uses: ramsey/composer-install@v3
+
+      - name: Lint
+        run: composer lint
+
+  release:
+    name: Build zip and publish GitHub Release
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Verify tag commit is on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "${{ github.sha }}" origin/main; then
+            echo "::error::Tag ${{ github.ref_name }} points to a commit that is not in origin/main history."
+            exit 1
+          fi
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Validate Composer
+        run: composer validate --strict
+
+      - name: Install production dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-dev --optimize-autoloader --no-interaction --prefer-dist'
+
+      - name: Assert WP AI Client is not bundled
+        run: |
+          if [ -e vendor/wordpress ]; then
+            echo "::error::Release vendor must not contain vendor/wordpress (install WP AI Client separately)."
+            ls -la vendor/wordpress || true
+            exit 1
+          fi
+
+      - name: Stage distributable
+        run: |
+          mkdir -p build/wp-ai-telemetry
+          cp plugin.php README.md LICENSE build/wp-ai-telemetry/
+          cp -r includes vendor build/wp-ai-telemetry/
+
+      - name: Create archive
+        run: |
+          ( cd build && zip -r -9 ../wp-ai-telemetry.zip wp-ai-telemetry )
+
+      - name: Build release notes
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          {
+            CONTENTS=$(git tag -l --format='%(contents)' "$TAG" 2>/dev/null || true)
+            STRIPPED=$(printf '%s' "$CONTENTS" | tr -d '[:space:]')
+            if [ -n "$STRIPPED" ]; then
+              printf '%s\n' "$CONTENTS"
+            else
+              PREV=$(git tag -l 'v*' --sort=-v:refname | awk -v cur="$TAG" '$0 != cur { print; exit }')
+              if [ -n "$PREV" ]; then
+                echo "Changes since $PREV:"
+                echo ""
+                git log --pretty=format:'- %s' "${PREV}..${TAG}"
+              else
+                echo "Full history for this release:"
+                echo ""
+                ROOT=$(git rev-list --max-parents=0 HEAD)
+                git log --pretty=format:'- %s' --reverse "${ROOT}..HEAD"
+              fi
+            fi
+          } > "${GITHUB_WORKSPACE}/release-notes.md"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wp-ai-telemetry.zip
+          body_path: release-notes.md
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

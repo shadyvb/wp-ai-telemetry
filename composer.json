@@ -1,0 +1,97 @@
+{
+    "name": "wordpress/wp-ai-telemetry",
+    "description": "WordPress plugin that logs WP AI Client calls to OpenTelemetry-compatible backends via OTLP",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "wordpress",
+        "open-telemetry",
+        "otlp",
+        "ai",
+        "observability"
+    ],
+    "authors": [
+        {
+            "name": "Shady Sharaf"
+        }
+    ],
+    "homepage": "https://github.com/shadyvb/wp-ai-telemetry",
+    "support": {
+        "issues": "https://github.com/shadyvb/wp-ai-telemetry/issues",
+        "source": "https://github.com/shadyvb/wp-ai-telemetry"
+    },
+    "require": {
+        "php": ">=8.1",
+        "guzzlehttp/guzzle": "^7.10",
+        "open-telemetry/exporter-otlp": "^1.0",
+        "open-telemetry/sdk": "^1.0",
+        "open-telemetry/sem-conv": "^1.0"
+    },
+    "require-dev": {
+        "automattic/vipwpcs": "^3.0",
+        "cweagans/composer-patches": "^1.7",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "php-stubs/wordpress-stubs": "^6.6",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpunit/phpunit": "^9.6",
+        "slevomat/coding-standard": "^8.15",
+        "squizlabs/php_codesniffer": "^3.13",
+        "szepeviktor/phpstan-wordpress": "^2.0",
+        "vlucas/phpdotenv": "^5.6",
+        "wordpress/wp-ai-client": "^0.4",
+        "wp-coding-standards/wpcs": "^3.1",
+        "wp-phpunit/wp-phpunit": "^6.8",
+        "yoast/phpunit-polyfills": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "WP_AI_Telemetry\\": "includes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WP_AI_Telemetry\\Tests\\": "tests/phpunit/includes/",
+            "WP_AI_Telemetry\\Tests\\Functional\\": "tests/phpunit/tests/Functional/",
+            "WP_AI_Telemetry\\Tests\\Multisite\\": "tests/phpunit/tests/Multisite/",
+            "WP_AI_Telemetry\\Tests\\Support\\": "tests/Support/",
+            "WP_AI_Telemetry\\Tests\\Unit\\": "tests/phpunit/tests/Unit/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        },
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.1.0"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "patches": {
+            "wordpress/wp-ai-client": {
+                "Wire EventDispatcher into SDK PromptBuilder (WP hook parity)": "patches/wp-ai-client-prompt-builder-event-dispatcher.patch"
+            }
+        }
+    },
+    "scripts": {
+        "lint": [
+            "@phpcs",
+            "@phpstan"
+        ],
+        "phpcs": "phpcs",
+        "phpcbf": "phpcbf",
+        "phpstan": "phpstan analyse --memory-limit=1024M -c phpstan.neon.dist",
+        "test": "phpunit -c phpunit.xml.dist",
+        "test-multisite": "phpunit -c tests/phpunit/multisite.xml",
+        "record-functional-fixtures": "php tests/bin/record-observations-fixtures.php"
+    }
+}

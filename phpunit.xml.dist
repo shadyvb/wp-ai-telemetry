@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/phpunit/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	>
+	<php>
+		<env name="WORDPRESS_TABLE_PREFIX" value="wptests_" />
+		<const name="WP_HTTP_BLOCK_EXTERNAL" value="false" />
+	</php>
+	<testsuites>
+		<testsuite name="unit">
+			<file>tests/phpunit/tests/Unit/ObservationsFixtureNormalizerTest.php</file>
+			<file>tests/phpunit/tests/Unit/RootSpanAttributesTest.php</file>
+			<file>tests/phpunit/tests/Unit/SessionMetadataTest.php</file>
+			<file>tests/phpunit/tests/Unit/SessionSanitizeTest.php</file>
+			<file>tests/phpunit/tests/Unit/TelemetryAutoConversationSessionTest.php</file>
+			<file>tests/phpunit/tests/Unit/TelemetryRootSpanAttributesTest.php</file>
+		</testsuite>
+		<testsuite name="functional">
+			<file>tests/phpunit/tests/Functional/OtlpTraceFunctionalTest.php</file>
+		</testsuite>
+	</testsuites>
+	<groups>
+		<exclude>
+			<group>ms-required</group>
+		</exclude>
+	</groups>
+</phpunit>
