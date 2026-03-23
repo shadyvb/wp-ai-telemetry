@@ -417,7 +417,7 @@ class Telemetry {
 		$span->setAttribute( 'gen_ai.usage.output_tokens', $token_usage->getCompletionTokens() );
 
 		// Thought tokens: wordpress/php-ai-client 1.3.0+ only (see TokenUsage::getThoughtTokens()).
-		// @phpstan-ignore function.alreadyNarrowedType (dev vendor may be newer than wp-ai-client’s locked SDK)
+		// @phpstan-ignore-next-line function.alreadyNarrowedType.
 		if ( method_exists( $token_usage, 'getThoughtTokens' ) ) {
 			$thought = $token_usage->getThoughtTokens();
 			if ( $thought !== null ) {
